@@ -13,21 +13,19 @@ func main() {
 
 	zctx, _ := zmq.NewContext()
 
-	var bdso string
 	var auto bool
-	var clients int
 	var reqs int
+	var clients int
 
-	flag.StringVar(&bdso, "net", "", "Bdso network")
 	flag.BoolVar(&auto, "auto", false, "Automated")
-	flag.IntVar(&clients, "clients", 1, "Amount of automated clients")
 	flag.IntVar(&reqs, "reqs", 5, "Amount of requests")
+	flag.IntVar(&clients, "clients", 5, "Amount of clients (if given)")
 
 	flag.Parse()
 
 	if auto {
-		modules.StartAutomated(zctx, clients, reqs, bdso)
+		modules.StartAutomated(zctx, clients, reqs)
 		return
 	}
-	modules.StartInteractive(zctx, bdso)
+	modules.StartInteractive(zctx)
 }

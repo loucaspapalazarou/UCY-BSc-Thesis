@@ -14,6 +14,7 @@ type Client struct {
 	Message_counter int
 	Servers         map[string]*zmq.Socket
 
+	// Experimental evaluation statistics
 	TOTAL_GET_TIME int
 	TOTAL_ADD_TIME int
 	REQUESTS       int
@@ -47,5 +48,4 @@ func CreateClient(id string, servers []config.Node, zctx *zmq.Context) *Client {
 		TOTAL_ADD_TIME:  0,
 		REQUESTS:        0,
 	}
-
 }

@@ -54,7 +54,7 @@ func parseHostsFile(fileName string) ([]Node, error) {
 	return nodes, nil
 }
 
-func Initialize(network_name string) {
+func Initialize() []Node {
 
 	working_dir, err := os.Getwd()
 	if err != nil {
@@ -75,5 +75,7 @@ func Initialize(network_name string) {
 	MEDIUM_THRESHOLD = 2*F + 1
 	// f+1
 	LOW_THRESHOLD = F + 1
+
+	return SERVERS
 
 }
