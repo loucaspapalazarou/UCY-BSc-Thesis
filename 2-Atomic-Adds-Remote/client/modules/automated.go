@@ -5,6 +5,7 @@ import (
 	"2-Atomic-Adds/config"
 	"2-Atomic-Adds/messaging"
 	"2-Atomic-Adds/tools"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -48,13 +49,14 @@ func StartAutomatedAtomic(my_id, my_message, peer_id, peer_message, dest string,
 		message := peer_id + ";" + dest + ";" + my_message + "_" + strconv.Itoa(r) + ";" + peer_message + "_" + strconv.Itoa(r)
 		add_atomic_time := messaging.AddAtomic(client, message)
 		_, get_time := messaging.Get(client)
+		fmt.Println(add_atomic_time)
 		s := tools.Stats{
 			TOTAL_GET_TIME:        client.TOTAL_GET_TIME,
 			TOTAL_ADD_TIME:        client.TOTAL_ADD_TIME,
 			TOTAL_ADD_ATOMIC_TIME: client.TOTAL_ADD_ATOMIC_TIME,
 			REQUESTS:              client.REQUESTS,
 		}
-		client.TOTAL_ADD_ATOMIC_TIME, client.REQUESTS = tools.IncrementAddTime(client.Id, add_atomic_time, s)
+		client.TOTAL_ADD_ATOMIC_TIME, client.REQUESTS = tools.IncrementAddAtomicTime(client.Id, add_atomic_time, s)
 		client.TOTAL_GET_TIME, client.REQUESTS = tools.IncrementGetTime(client.Id, get_time, s)
 	}
 	tools.Log(my_id, "Done")
