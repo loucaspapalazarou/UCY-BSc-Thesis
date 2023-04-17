@@ -8,8 +8,6 @@ import (
 	zmq "github.com/pebbe/zmq4"
 )
 
-// go run . -auto_atomic -my_id loukas -peer_id marios -my_msg hello -peer_msg world -dest bdso-1 -reqs 100
-
 func main() {
 	tools.ResetLogFile()
 
