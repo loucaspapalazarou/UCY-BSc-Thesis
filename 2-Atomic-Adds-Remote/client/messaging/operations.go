@@ -134,7 +134,7 @@ func AddAtomic(c *client.Client, record string) time.Duration {
 		if len(replies) >= config.F+1 {
 			elapsed := time.Since(start)
 			tools.Log(c.Id, "Record {"+record+"} appended to destination")
-			tools.Log(c.Id, "ADD_ATOMIC completed in: "+elapsed.String()+". Record {"+record+"} appended")
+			tools.Log(c.Id, "ADD_ATOMIC completed in: "+elapsed.String())
 			return elapsed
 		}
 	}

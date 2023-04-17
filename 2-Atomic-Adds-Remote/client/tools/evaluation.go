@@ -26,7 +26,7 @@ func saveState(client_id string, stats Stats) error {
 	avg_get := float64(stats.TOTAL_GET_TIME) / float64(stats.REQUESTS) / float64(time.Millisecond)
 	avg_add_atomic := float64(stats.TOTAL_ADD_ATOMIC_TIME) / float64(stats.REQUESTS) / float64(time.Millisecond)
 	avg_add := float64(stats.TOTAL_ADD_TIME) / float64(stats.REQUESTS) / float64(time.Millisecond)
-	_, err = fmt.Fprintf(file, "REQUESTS=%d\nAVG_GET_TIME=%fms\nAVG_ADD_TIME=%fms\nAVG_ADD_ATOMIC_TIME=%fms", stats.REQUESTS, avg_get, avg_add, avg_add_atomic)
+	_, err = fmt.Fprintf(file, "REQUESTS=%d\nAVG_GET_TIME=%fms\nAVG_ADD_TIME=%fms\nAVG_ADD_ATOMIC_TIME=%fms\n", stats.REQUESTS, avg_get, avg_add, avg_add_atomic)
 
 	if err != nil {
 		return err
