@@ -2,7 +2,7 @@
 
 # Make sure there is no other hosts file in the directory
 
-NUM_ITERATIONS=3
+NUM_ITERATIONS=5
 
 rm -rf results
 mkdir results
