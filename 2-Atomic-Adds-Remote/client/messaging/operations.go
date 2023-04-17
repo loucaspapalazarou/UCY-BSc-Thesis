@@ -49,7 +49,7 @@ func countMatchingReplies(replies map[string]string) string {
 	return strings.Join(commonSet, " ")
 }
 
-func Get(c *client.Client) string {
+func Get(c *client.Client) (string, time.Duration) {
 	tools.Log(c.Id, "Called GET")
 	c.Message_counter++
 	start := time.Now()
@@ -71,13 +71,13 @@ func Get(c *client.Client) string {
 		if len(r) > 0 {
 			elapsed := time.Since(start)
 			tools.Log(c.Id, "GET completed in: "+elapsed.String())
-			return r
+			return r, elapsed
 		}
 	}
 }
 
 // Do i have to send to 2f+1 or all?
-func Add(c *client.Client, record string) {
+func Add(c *client.Client, record string) time.Duration {
 	c.Message_counter++
 	tools.Log(c.Id, "Called ADD("+record+")")
 	message := strconv.Itoa(c.Message_counter) + "." + record
@@ -102,15 +102,16 @@ func Add(c *client.Client, record string) {
 		if len(replies) >= config.F+1 {
 			elapsed := time.Since(start)
 			tools.Log(c.Id, "ADD completed in: "+elapsed.String()+". Record {"+record+"} appended")
-			return
+			return elapsed
 		}
 	}
 }
 
-func AddAtomic(c *client.Client, record string) {
+func AddAtomic(c *client.Client, record string) time.Duration {
 	c.Message_counter++
 	message := strconv.Itoa(c.Message_counter) + ".atomic;" + c.Id + ";" + record
 	tools.Log(c.Id, "Called ADD_ATOMIC("+message+")")
+	start := time.Now()
 	sendToServers(c.Servers, []string{ADD, message}, 2*config.F+1)
 	message = strings.Replace(message, "atomic", "atomic-complete", 1)
 	// WAIT FOR F+1 RESPONSES
@@ -131,8 +132,10 @@ func AddAtomic(c *client.Client, record string) {
 			}
 		}
 		if len(replies) >= config.F+1 {
+			elapsed := time.Since(start)
 			tools.Log(c.Id, "Record {"+record+"} appended to destination")
-			return
+			tools.Log(c.Id, "ADD_ATOMIC completed in: "+elapsed.String()+". Record {"+record+"} appended")
+			return elapsed
 		}
 	}
 }

@@ -38,3 +38,16 @@ func StartAutomated(zctx *zmq.Context, client_count, request_count int, network_
 	}
 	wg.Wait()
 }
+
+// Starts just one client with a base message
+func StartAutomatedAtomic(my_id, my_message, peer_id, peer_message, dest string, zctx *zmq.Context, request_count int) {
+	servers := config.Initialize("sbdso")
+	tools.Log(my_id, "Id set")
+	client := client.CreateClient(my_id, servers, zctx)
+	for r := 0; r < request_count; r++ {
+		message := peer_id + ";" + dest + ";" + my_message + "_" + strconv.Itoa(r) + ";" + peer_message + "_" + strconv.Itoa(r)
+		messaging.AddAtomic(client, message)
+		messaging.Get(client)
+	}
+	tools.Log(my_id, "Done")
+}
