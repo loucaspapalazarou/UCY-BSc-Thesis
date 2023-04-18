@@ -48,14 +48,20 @@ func handleAdd(receiver *server.Server, message Message) {
 	}
 }
 
+// Function to interact with reliable_broadcast
 func handleRB(receiver *server.Server, message Message) {
+	// prepare the response
 	response := []string{message.Content[0], receiver.Id, ADD_RESPONSE, message.Content[1]}
 
-	if gset.Exists(receiver.Gset, message.Content[1]) {
+	// check if the record already exists
+	record := message.Content[1]
+	if gset.Exists(receiver.Gset, record) {
 		receiver.Receive_socket.SendMessage(response)
 		return
 	}
 
+	// pass message through the true handler
+	// if rb is complete (aka delivered), add message to gset
 	delivered := HandleReliableBroadcast(receiver, message)
 	if delivered && !gset.Exists(receiver.Gset, message.Content[1]) {
 		// now check if atomic
@@ -65,9 +71,9 @@ func handleRB(receiver *server.Server, message Message) {
 		return
 	}
 
-	if delivered && gset.Exists(receiver.Gset, message.Content[1]) {
-		receiver.Receive_socket.SendMessage(response)
-		tools.Log(receiver.Id, "Record {"+message.Content[1]+"} already exists")
-		return
-	}
+	// if delivered && gset.Exists(receiver.Gset, message.Content[1]) {
+	// 	receiver.Receive_socket.SendMessage(response)
+	// 	tools.Log(receiver.Id, "Record {"+message.Content[1]+"} already exists")
+	// 	return
+	// }
 }
