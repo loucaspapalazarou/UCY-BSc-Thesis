@@ -62,8 +62,17 @@ func handleRB(receiver *server.Server, message Message) {
 
 	// pass message through the true handler
 	// if rb is complete (aka delivered), add message to gset
+	// delivered := HandleReliableBroadcast(receiver, message)
+	// if delivered && !gset.Exists(receiver.Gset, message.Content[1]) {
+	// 	// now check if atomic
+	// 	gset.Add(receiver.Gset, message.Content[1])
+	// 	receiver.Receive_socket.SendMessage(response)
+	// 	tools.Log(receiver.Id, "Appended record {"+message.Content[1]+"}")
+	// 	return
+	// }
+
 	delivered := HandleReliableBroadcast(receiver, message)
-	if delivered && !gset.Exists(receiver.Gset, message.Content[1]) {
+	if delivered {
 		// now check if atomic
 		gset.Add(receiver.Gset, message.Content[1])
 		receiver.Receive_socket.SendMessage(response)
