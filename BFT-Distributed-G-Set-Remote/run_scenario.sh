@@ -7,14 +7,14 @@ fi
 
 param=$1
 
-for thread_num in {1..3}; do
+for thread_num in {1..1}; do
     sed -i "s/NUM_THREADS=[0-9]*/NUM_THREADS=$thread_num/" config # Update the number of threads in the config file
     echo Starting with $thread_num threads
     ansible-playbook -i ./hosts end.yml
     ansible-playbook -i ./hosts start.yml
     while true; do
         echo Waiting for clients to finish...
-        client_nodes=(node1 node2 node3 node4)
+        client_nodes=(node{1..14})
         done_count=0
         for node in "${client_nodes[@]}"; do
             ssh "$node" "pgrep BFT-Distributed > /dev/null"
