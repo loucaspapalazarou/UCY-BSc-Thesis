@@ -14,7 +14,7 @@ for thread_num in {1..1}; do
     ansible-playbook -i ./hosts start.yml
     while true; do
         echo Waiting for clients to finish...
-        client_nodes=(node{1..14})
+        client_nodes=(node{1..19})
         done_count=0
         for node in "${client_nodes[@]}"; do
             ssh "$node" "pgrep BFT-Distributed > /dev/null"
