@@ -4,9 +4,11 @@ import (
 	"2-Atomic-Adds/gset"
 	"2-Atomic-Adds/server"
 	"2-Atomic-Adds/tools"
+	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/pebbe/zmq4"
 )
@@ -99,7 +101,10 @@ func handleAtomicAdd(s *server.Server, r1, r2 string) {
 	msg1, msg2 := parts1[4], parts2[4]
 
 	// send adds
-	BdsoAdd(s, msg1, msg2, dest1, dest2)
+	atomic_add_time, err := BdsoAdd(s, msg1, msg2, dest1, dest2)
+	if err == nil {
+		tools.IncrementAddAtomicTime(s.Host, atomic_add_time)
+	}
 
 	// respond 1
 	response = []string{client1, s.Id, ADD_ATOMIC_RESPONSE, r1}
@@ -114,20 +119,20 @@ func handleAtomicAdd(s *server.Server, r1, r2 string) {
 }
 
 // only returns when we know the records were appended
-func BdsoAdd(s *server.Server, r1, r2, dest1, dest2 string) {
+func BdsoAdd(s *server.Server, r1, r2, dest1, dest2 string) (time.Duration, error) {
 	tools.Log(s.Id, "Called ADD("+r1+") with destination:"+dest1)
 	tools.Log(s.Id, "Called ADD("+r2+") with destination:"+dest2)
 	network1, ok1 := s.Bdso_networks[dest1]
 	// If the network exists
 	if !ok1 {
 		tools.Log(s.Id, dest1+" network does not exist!")
-		return
+		return 0, fmt.Errorf("network does not exist")
 	}
 	network2, ok2 := s.Bdso_networks[dest2]
 	// If the network exists
 	if !ok2 {
 		tools.Log(s.Id, dest2+" network does not exist!")
-		return
+		return 0, fmt.Errorf("network does not exist")
 	}
 
 	N1 := len(s.Bdso_networks[dest1])
@@ -136,6 +141,7 @@ func BdsoAdd(s *server.Server, r1, r2, dest1, dest2 string) {
 	F2 := (N2 - 1) / 3
 
 	s.Message_counter++
+	start := time.Now()
 	m1 := strconv.Itoa(s.Message_counter) + "." + r1
 	sendToServers(network1, []string{ADD, m1}, 2*F1+1)
 	s.Message_counter++
@@ -163,8 +169,10 @@ func BdsoAdd(s *server.Server, r1, r2, dest1, dest2 string) {
 			// tools.Log(s.Id, strconv.Itoa(len(replies1))+"/"+strconv.Itoa(F2)+" "+r2)
 		}
 	}
+	elapsed := time.Since(start)
 	tools.Log(s.Id, "Record {"+r1+"} appended at "+dest1)
 	tools.Log(s.Id, "Record {"+r2+"} appended at "+dest2)
+	return elapsed, nil
 }
 
 func sendToServers(m map[string]*zmq4.Socket, message []string, amount int) {

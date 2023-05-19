@@ -6,7 +6,6 @@ NUM_ITERATIONS=5
 
 rm -rf results
 mkdir results
-lscpu > lscpu.txt
 
 echo Running normal
 rm hosts
