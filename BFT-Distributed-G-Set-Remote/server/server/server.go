@@ -17,12 +17,13 @@ type Server struct {
 	Host           string
 	Port           string
 	Gset           map[string]string
-	My_init        map[string]bool
-	My_echo        map[string]bool
-	My_vote        map[string]bool
-	Peers_echo     map[string]bool
-	Peers_vote     map[string]bool
-	Bdso_networks  map[string]map[string]*zmq.Socket
+
+	// Used for reliable broadcast
+	My_init    map[string]bool
+	My_echo    map[string]bool
+	My_vote    map[string]bool
+	Peers_echo map[string]bool
+	Peers_vote map[string]bool
 
 	BRB_start_time         map[string]time.Time
 	BRB_MESSAGES           int
